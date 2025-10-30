@@ -5,6 +5,7 @@ const http = require("http");
 const httpServer = http.createServer(app);
 
 const { Server } = require("socket.io");
+const { generateAIResponse } = require("../services/ai.services");
 const io = new Server(httpServer, {
   // ...options...
 });
@@ -14,10 +15,11 @@ io.on("connection", (socket) => {
     console.log("user disconnected");
   });
 
-  socket.on("message", (msg) => {
-    // io.emit("chat message", msg);
+  socket.on("ai message", async (msg) => {
+    const aiResponse = await generateAIResponse(msg);
+    // console.log("AI Response:", aiResponse);
 
-    console.log("message: " + msg);
+    socket.emit("ai message res", aiResponse);
   });
 });
 
